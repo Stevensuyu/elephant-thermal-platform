@@ -1,0 +1,34 @@
+{
+  "version": 2,
+<<<<<<< HEAD
+=======
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+>>>>>>> a82e6ef3c0922919ec98651f9d917808aa28e81b
+  "buildCommand": "npm run build",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, X-Worker-Key"
+        }
+      ]
+    }
+  ]
+}
