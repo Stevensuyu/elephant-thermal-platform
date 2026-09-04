@@ -1,15 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-<<<<<<< HEAD
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-=======
-    "lib": ["dom", "dom.iterable", "esnext"],
->>>>>>> a82e6ef3c0922919ec98651f9d917808aa28e81b
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -27,7 +23,6 @@
       }
     ],
     "paths": {
-<<<<<<< HEAD
       "@/*": [
         "./src/*"
       ]
@@ -48,11 +43,4 @@
     "node_modules",
     "prisma.config.ts"
   ]
-=======
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
->>>>>>> a82e6ef3c0922919ec98651f9d917808aa28e81b
 }
