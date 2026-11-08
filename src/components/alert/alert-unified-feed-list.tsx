@@ -67,6 +67,8 @@ interface VideoSource {
   builtin?: boolean
 }
 
+const REAL_DETECT_VIDEO = 'http://127.0.0.1:8765/video'
+
 const CLASS_COLOR: Record<string, string> = {
   elephant: '#00c8ff', person: '#5050ff', dog: '#00ff00', cheetah: '#00a500',
   animal: '#c8c800', device: '#ff00c8',
@@ -586,7 +588,10 @@ function LiveStage({
 }) {
   return (
     <>
-      {showLive && imgSrc ? (
+      {running ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={REAL_DETECT_VIDEO} alt="实时监控画面" className="h-full w-full object-contain" />
+      ) : showLive && imgSrc ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={imgSrc} alt="实时直播视场" className="h-full w-full object-cover" onError={() => { /* handled by parent */ }} />
       ) : (
@@ -642,7 +647,7 @@ function LiveStage({
                   className="absolute -top-[16px] left-0 rounded px-1 py-0.5 text-[9px] font-semibold leading-none"
                   style={{ background: color, color: '#04121f' }}
                 >
-                  象{b.track_id ?? i + 1} {(b.confidence * 100).toFixed(1)}%
+                  {b.class} {(b.confidence * 100).toFixed(1)}%
                 </span>
               </div>
             )

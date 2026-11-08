@@ -149,7 +149,7 @@ export default function MonitorView({
       {activeBannerTask && <ActiveWarningBanner task={activeBannerTask} />}
 
 
-      {/* 统一画面中心 */}
+      {/* 统一画面中心（实时监控真实流 + 无人机频道，单一视频模块） */}
       <UnifiedFeed fleet={fleet} />
 
       {/* 实时动态地图 */}

@@ -28,12 +28,36 @@ function writeMode(mode: 'off' | 'demo') {
 }
 
 /**
- * /api/live-detection — 实时检测数据（模拟端点）
- * GET: 返回检测状态。默认 'off'（未接入视频源，诚实返回无检测）；
- *      仅当 mode='demo'（推演演示）时返回模拟检测结果，全程标注「推演演示，非真实视频」。
- * POST: 设置模式 { mode: 'off' | 'demo' }
+ * /api/live-detection — 实时检测数据
+ *
+ * 优先对接本地真实检测服务（worker/detect，端口 8765）：摄像头/视频流/无人机 +
+ * YOLO 最新版 或 英伟达 LocateAnything-3B 的真实识别结果。
+ * 检测服务未启动时，仅当 mode='demo'（推演演示）才返回模拟检测，全程标注「推演演示」。
  */
+const DETECT_BASE = process.env.DETECT_BASE_URL || 'http://127.0.0.1:8765'
+
+async function fetchRealDetection() {
+  try {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 2500)
+    const resp = await fetch(`${DETECT_BASE}/api/live-detection`, {
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+    clearTimeout(timer)
+    if (resp.ok) return await resp.json()
+    return null
+  } catch {
+    return null
+  }
+}
+
 export async function GET() {
+  const real = await fetchRealDetection()
+  if (real && real.running === true) {
+    return NextResponse.json(real)
+  }
+
   const mode = readMode()
   if (mode === 'demo') {
     const detections = [
@@ -66,7 +90,8 @@ export async function GET() {
     mode: 'off',
     running: false,
     detected: false,
-    note: '未接入真实视频流',
+    realService: real ? 'online' : 'offline',
+    note: '未接入真实视频流（检测服务未启动时请运行 start-detect.bat）',
   })
 }
 

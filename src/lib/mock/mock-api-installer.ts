@@ -23,6 +23,9 @@ function applyMock(): void {
   '/api/disposal-workflows',
   '/api/dispatch-channels',
   '/api/skyport',
+  // 本地真实检测服务（摄像头/相机 + YOLO/英伟达 LocateAnything）：走真实服务端路由
+  '/api/detect',
+  '/api/live-detection',
 ]
   // 暴露原生 fetch 给 mock router：AI 相关端点（/api/tasks 摘要、/api/disposal 工单、
   // /api/disposal 结案报告兜底、/api/ai-auto-judge 等）通过它转发到真实 LLM 服务端，

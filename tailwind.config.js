@@ -1,15 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-<<<<<<< HEAD
   darkMode: 'class',
-=======
->>>>>>> a82e6ef3c0922919ec98651f9d917808aa28e81b
   content: [
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-<<<<<<< HEAD
     extend: {
       fontFamily: {
         sans: ['Inter', 'Microsoft YaHei', 'PingFang SC', 'system-ui', 'sans-serif'],
@@ -46,9 +42,6 @@ module.exports = {
         'shimmer': 'dv-shimmer 2s linear infinite',
       },
     },
-=======
-    extend: {},
->>>>>>> a82e6ef3c0922919ec98651f9d917808aa28e81b
   },
   plugins: [],
 }

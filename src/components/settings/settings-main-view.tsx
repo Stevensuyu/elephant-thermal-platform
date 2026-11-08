@@ -1,7 +1,7 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
-import { Settings2, Cpu, Database, Plane, Workflow, FlaskConical, Shield, Radio, Film, Search } from 'lucide-react'
+import { Settings2, Cpu, Database, Plane, Workflow, FlaskConical, Shield, Radio, Film, Search, Camera, Terminal } from 'lucide-react'
 import AiConfigPanel from '@/components/settings/settings-ai-config-panel'
 import VideoStreamPanel from '@/components/settings/settings-video-stream-panel'
 import GeneralSettingsPanel from '@/components/settings/settings-general-panel'
@@ -9,6 +9,8 @@ import DroneRegistryPanel from '@/components/settings/settings-drone-registry-pa
 import DisposalConfigPanel from '@/components/disposal/disposal-config-panel'
 import DispatchChannelsPanel from '@/components/settings/settings-dispatch-channels-panel'
 import SimulationTestPanel from '@/components/settings/settings-simulation-test-panel'
+import CameraDetectPanel from '@/components/settings/settings-camera-detect-panel'
+import SettingsLogPanel from '@/components/settings/settings-log-panel'
 import AdminPanel from '@/components/settings/settings-admin-panel'
 import { levelStyle } from '@/lib/utils/util-alert-level-styles'
 import type { TrainingTask } from '@/lib/utils/util-app-types'
@@ -89,9 +91,25 @@ export default function SettingsView({ tasks, currentRole, onViewTask, onDeleteT
       {/* AI 配置中心 */}
       {sub === 'ai-llm-client' && <AiConfigPanel />}
 
-      {/* 设备与通道：巡检无人机 + 视频流配置 + 设备分发通道 */}
+      {/* 设备与通道：相机接入与实时检测 + 巡检无人机 + 视频流配置 + 设备分发通道 */}
       {sub === 'devices' && (
         <div className="space-y-6">
+          <section>
+            <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-slate-100">
+              <Camera size={16} className="text-slate-300" /> 相机接入与实时检测
+            </h2>
+            <CameraDetectPanel />
+          </section>
+
+          <section>
+            <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-slate-100">
+              <Terminal size={16} className="text-slate-300" /> 服务日志
+            </h2>
+            <SettingsLogPanel />
+          </section>
+
+          <div className="border-t border-slate-700/40" />
+
           <section>
             <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-slate-100">
               <Plane size={16} className="text-slate-300" /> 巡检无人机

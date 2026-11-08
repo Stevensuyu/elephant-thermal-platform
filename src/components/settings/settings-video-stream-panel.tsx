@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Film, Trash2, Plus, Loader2, Save, MapPin, Sliders, CheckCircle2, Radio, Plug, Unplug, Signal, Gauge, Cable, XCircle } from 'lucide-react'
+import CameraDetectPanel from '@/components/settings/settings-camera-detect-panel'
 
 /**
  * 视频流接入（设置子模块）。
@@ -258,6 +259,9 @@ export default function VideoStreamPanel() {
 
   return (
     <div className="space-y-4">
+      {/* 本机摄像头 / 相机实时检测（真实链路：YOLO 最新版 / 英伟达 LocateAnything-3B） */}
+      <CameraDetectPanel />
+
       {/* 视频源列表 + 接入状态 */}
       <div className="dv-panel p-5">
         <div className="mb-3 flex items-center justify-between">

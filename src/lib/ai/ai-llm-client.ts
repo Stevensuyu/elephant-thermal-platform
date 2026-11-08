@@ -42,14 +42,14 @@ export interface LlmResult {
 }
 
 const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1'
-const DEFAULT_MODEL = 'minimax/minimax-m3:free'
+const DEFAULT_MODEL = 'nex-agi/nex-n2.5-pro:free'
 
-/** 备用模型切换链：免费模型共享池限流时按序切换（可用 AI_FALLBACK_MODELS 覆盖） */
+/** 备用模型切换链：免费模型共享池限流时按序切换（可用 AI_FALLBACK_MODELS 覆盖）
+ *  只保留3个经过实测可靠的模型，避免遍历过多模型导致超时 */
 const DEFAULT_FALLBACK_MODELS = [
-  'google/gemma-4-31b-it:free',
-  'z-ai/glm-5.2:free',
   'nvidia/nemotron-3-super-120b-a12b:free',
-  'google/gemma-4-26b-a4b-it:free',
+  'inclusionai/ling-3.0-flash-vl:free',
+  'nvidia/nemotron-3.5-lightning:free',
 ]
 
 /** UI 配置中心存储的模型记录形状（与 api/ai-models/route.ts 保持一致） */
@@ -134,8 +134,8 @@ async function callModelOnce(
   model: string,
   opts: CallLLMOptions,
 ): Promise<LlmResult> {
-  const timeoutMs = opts.timeoutMs || 70000
-  const maxRetries = 1
+  const timeoutMs = opts.timeoutMs || 40000  // 优化：从70秒减少到40秒
+  const maxRetries = 0  // 优化：不重试，直接切换下一个模型，避免总时间过长
   let lastStatus: number | undefined
   let lastErr: unknown = null
 
@@ -151,8 +151,11 @@ async function callModelOnce(
         max_tokens: opts.maxTokens ?? 1500,
         stream: false,
       }
+      // 注意：不强制使用 response_format json_object，因为部分免费模型不支持
+      // 改为让模型自然输出 JSON，然后用 extractJson 提取
       if (opts.jsonMode) {
-        body.response_format = { type: 'json_object' }
+        // 只在 system prompt 中要求 JSON 输出，不设置 response_format
+        // 这样兼容性更好
       }
       const res = await fetch(`${baseURL}/chat/completions`, {
         method: 'POST',
@@ -301,11 +304,18 @@ export function extractJson(content: string): any {
   }
 }
 
-/** 便利函数：请求 JSON 模式并返回解析后的对象（校验失败返回 null） */
+/** 便利函数：请求 JSON 输出并返回解析后的对象（校验失败返回 null）
+ *  注意：不使用 response_format json_object（部分模型不支持），
+ *  而是在 system prompt 中要求 JSON 输出，然后用 extractJson 提取 */
 export async function callLLMJson(
   opts: CallLLMOptions,
 ): Promise<{ data: any; result: LlmResult } | null> {
-  const result = await callLLM({ ...opts, jsonMode: true })
+  // 在 messages 开头添加 JSON 输出要求的 system prompt
+  const jsonMessages = [
+    { role: 'system' as const, content: '你必须严格输出合法的 JSON 对象，不要输出 markdown 代码块，不要输出任何多余文字。只输出 JSON。' },
+    ...opts.messages,
+  ]
+  const result = await callLLM({ ...opts, messages: jsonMessages, jsonMode: false })
   const data = extractJson(result.content)
   if (data == null) return null
   return { data, result }

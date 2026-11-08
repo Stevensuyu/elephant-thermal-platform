@@ -1,51 +1,73 @@
 @echo off
-chcp 65001 >nul
 setlocal
-title 天眼护象 象群热风险平台 - 运行中
+title ??????? ?????????? - ??????
 cd /d "C:\Users\123\Desktop\elephant-thermal-risk-platform"
 
-REM 清除沙箱/代理注入的安全删除钩子环境变量（普通机器上这些变量不存在，set 为空无副作用）
-set CODEBUDDY_SESSION_ID=
-set CLAUDE_SESSION_ID=
-set CODEBUDDY_SAFE_DELETE_BULK_STATE_DIR=
-set CODEBUDDY_TOOL_CALL_ID=
+set PY=%CD%\.venv\Scripts\python.exe
 
 echo.
 echo ============================================================
-echo   天眼护象 象群热风险平台  -  启动器
-echo   正在启动开发服务器，请稍候...
-echo   浏览器会自动打开 http://localhost:3000
-echo   直播会在服务器启动后自动运行（内置本地象群样本）
-echo   演示结束：直接关闭本窗口即可停止服务
+echo   ??????? ?????????? - ????????
+echo.
+echo   ????????????????...
+echo   ???????????? http://localhost:3000
+echo   YOLO ????????????????????????
+echo.
+echo   ??????: admin     ????: tyhx2026
+echo.
+echo   ?????: ????????????????????????
 echo ============================================================
 echo.
 
-REM 若服务器已在运行（端口 3000 已响应），直接打开浏览器，不再重复启动
-powershell -Command "try{(Invoke-WebRequest -Uri http://localhost:3000 -UseBasicParsing -TimeoutSec 2).StatusCode}catch{exit 1}" >nul 2>&1
-if not errorlevel 1 (
-  echo 检测到服务器已在运行，直接打开浏览器。
-  start "" http://localhost:3000
-  goto :done
-)
+echo [1/3] ???????????...
+call :killport 3000
+call :killport 8765
+ping -n 3 127.0.0.1 >nul
 
-REM 后台启动 dev 服务器（日志写入 dev_console.log）
-start "TY_LIVE_DEV" cmd /c "npm run dev > dev_console.log 2>&1"
+echo [2/3] ?????????(3000) ?? ??????(8765)...
+start /B "TY_LIVE_DEV" cmd /c "npm run dev > dev_console.log 2>&1"
+if exist "%PY%" start /B "TY_DETECT" cmd /c "detect-watchdog.bat"
+if not exist "%PY%" echo   [???] ��??? .venv????????��??????????????
 
-REM 轮询等待端口就绪（每 2 秒一次，最多约 40 秒）
+echo [3/3] ?????????...
 :wait
-timeout /t 2 /nobreak >nul
-powershell -Command "try{(Invoke-WebRequest -Uri http://localhost:3000 -UseBasicParsing -TimeoutSec 2).StatusCode}catch{exit 1}" >nul 2>&1
-if errorlevel 1 goto wait
+ping -n 3 127.0.0.1 >nul
+netstat -ano | findstr ":3000" | findstr "LISTENING" >nul
+if not errorlevel 1 goto ready
+echo   ?????...
+goto wait
 
-REM 就绪后打开浏览器
+:ready
 start "" http://localhost:3000
+echo.
+echo   ????????????????????
+echo   ???????????? YOLO ?????? 30-60 ??...
+start /B "TY_AUTODETECT" powershell -ExecutionPolicy Bypass -File "auto-detect.ps1"
+echo.
+echo ============================================================
+echo   ???????????????????? = ?????��???
+echo ============================================================
+echo.
 
-:done
+:hold
+ping -n 6 127.0.0.1 >nul
+netstat -ano | findstr ":3000" | findstr "LISTENING" >nul
+if not errorlevel 1 goto hold
+goto stop
+
+:stop
 echo.
-echo 已就绪：浏览器已打开，直播会自动运行。
-echo 保持本窗口打开；关闭本窗口即停止服务。
-echo.
-echo 按任意键停止服务...
-pause >nul
-taskkill /fi "WINDOWTITLE eq TY_LIVE_DEV" /f >nul 2>&1
+echo ?????????��????????...
+call :killport 3000
+call :killport 8765
+ping -n 3 127.0.0.1 >nul
+echo ???��?????????
+ping -n 4 127.0.0.1 >nul
 endlocal
+exit /b 0
+
+:killport
+for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":%~1" ^| findstr "LISTENING"') do (
+  taskkill /PID %%p /T /F >nul 2>&1
+)
+exit /b 0

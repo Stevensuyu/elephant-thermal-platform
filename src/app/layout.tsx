@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-<<<<<<< HEAD
 import Watermark from '@/components/common/common-watermark-layer'
 
 export const metadata: Metadata = {
@@ -25,22 +24,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="antialiased">{children}<Watermark /></body>
-=======
-
-export const metadata: Metadata = {
-  title: '天眼护象实时研判平台',
-  description: '中国地图、DJI 司空、实时热成像与 AI 分析接口的一体化研判平台',
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="zh-CN">
-      <body>{children}</body>
->>>>>>> a82e6ef3c0922919ec98651f9d917808aa28e81b
     </html>
   )
 }
